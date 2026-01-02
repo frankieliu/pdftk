@@ -26,7 +26,7 @@ def create_parser() -> argparse.ArgumentParser:
     # Input files
     parser.add_argument(
         'inputs',
-        nargs='+',
+        nargs='*',
         metavar='INPUT',
         help='Input PDF files, optionally with handles (A=file.pdf)'
     )
@@ -123,13 +123,23 @@ def main(args=None):
         # Parse input files
         handles, files = parse_input_files(parsed_args.inputs)
 
+        # Validate at least one input file was provided
+        if not files:
+            parser.error("at least one input file is required")
+
+        # If no handles were specified, assign default handles (A, B, C, ...)
+        if not handles:
+            for i, file in enumerate(files):
+                handle = chr(ord('A') + i)  # A, B, C, ...
+                handles[handle] = file
+
         # Validate input files exist
         for file in files:
             validate_pdf_exists(file)
 
         # Dispatch to operation
         if parsed_args.operation == 'burst':
-            if len(files) \!= 1:
+            if len(files) != 1:
                 parser.error("burst operation requires exactly one input PDF")
 
             pages = burst(
@@ -144,7 +154,7 @@ def main(args=None):
             print(f"\nSuccessfully created {parsed_args.output}")
 
         elif parsed_args.operation == 'rotate':
-            if len(files) \!= 1:
+            if len(files) != 1:
                 parser.error("rotate operation requires exactly one input PDF")
 
             rotate(files[0], parsed_args.ranges, Path(parsed_args.output))
