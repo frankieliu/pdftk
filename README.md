@@ -43,8 +43,31 @@ uv sync
 
 ## Quick Start
 
+### Command Line
+
+```bash
+# Split PDF into individual pages
+pdftk document.pdf burst
+
+# Extract pages 1-5 from a PDF
+pdftk cat input.pdf -o output.pdf -r 1-5
+
+# Merge two PDFs
+pdftk cat file1.pdf file2.pdf -o merged.pdf
+
+# Merge with page selection
+pdftk cat A=in1.pdf B=in2.pdf -o out.pdf -r A1-10 B5-15
+
+# Rotate pages
+pdftk rotate input.pdf -o output.pdf -r 1east 5-10south
+
+# Shuffle (collate) pages from multiple files
+pdftk shuffle A=front.pdf B=back.pdf -o book.pdf -r A Bend-1
+```
+
+### Python API
+
 ```python
-# Python API (recommended for now)
 from pathlib import Path
 from pdftk.core import burst, cat, rotate, shuffle
 
@@ -81,16 +104,16 @@ Split a PDF into individual page files:
 
 ```bash
 # Default naming (pg_0001.pdf, pg_0002.pdf, etc.)
-pdftk document.pdf burst
+pdftk burst document.pdf
 
 # Custom output pattern
-pdftk document.pdf burst --output page_%02d.pdf
+pdftk burst document.pdf -p page_%02d.pdf
 
 # Output to specific directory
-pdftk document.pdf burst --output-dir output/pages/
+pdftk burst document.pdf -d output/pages/
 
 # Combined
-pdftk document.pdf burst --output page_%03d.pdf --output-dir ./split_pages/
+pdftk burst document.pdf -p page_%03d.pdf -d ./split_pages/
 ```
 
 **Output pattern** uses printf-style format:
@@ -304,7 +327,7 @@ shuffle(
 
 ### Split a Document for Review
 ```bash
-pdftk report.pdf burst --output-dir ./review_pages/
+pdftk burst report.pdf -d ./review_pages/
 # Creates review_pages/pg_0001.pdf, review_pages/pg_0002.pdf, ...
 ```
 

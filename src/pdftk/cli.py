@@ -14,65 +14,125 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="pdftk",
         description="PDF Toolkit - manipulate PDF documents",
-        epilog="For detailed documentation, see pdftk.md",
+        epilog="For more information and examples, see README.md",
     )
 
     parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
 
-    # Input files
-    parser.add_argument(
-        "inputs",
-        nargs="*",
-        metavar="INPUT",
-        help="Input PDF files, optionally with handles (A=file.pdf)",
-    )
-
     # Subcommands for operations
     subparsers = parser.add_subparsers(
-        dest="operation", help="PDF operation to perform", required=False
+        dest="operation",
+        help="PDF operation to perform",
+        required=True,
+        metavar="OPERATION",
     )
 
     # burst operation
     burst_parser = subparsers.add_parser(
-        "burst", help="Split PDF into individual page files"
+        "burst",
+        help="Split PDF into individual page files",
+        description="Split a PDF into individual page files",
     )
     burst_parser.add_argument(
-        "--output",
-        "-o",
+        "input", type=Path, metavar="INPUT", help="Input PDF file"
+    )
+    burst_parser.add_argument(
+        "-p",
+        "--pattern",
         dest="output_pattern",
         default="pg_%04d.pdf",
         help="Output filename pattern (default: pg_%%04d.pdf)",
     )
     burst_parser.add_argument(
-        "--output-dir",
+        "-d",
+        "--dir",
         dest="output_dir",
         type=Path,
         default=Path("."),
         help="Output directory (default: current directory)",
     )
 
-    # cat operation (stub)
+    # cat operation
     cat_parser = subparsers.add_parser(
-        "cat", help="Concatenate/merge PDFs with page ranges"
+        "cat",
+        help="Concatenate/merge PDFs with page ranges",
+        description="Concatenate and merge PDFs with optional page selection",
     )
     cat_parser.add_argument(
-        "ranges", nargs="*", help="Page ranges (e.g., 1-5, A1-10east, Bend-1odd)"
+        "inputs",
+        nargs="+",
+        metavar="INPUT",
+        help="Input PDF files, optionally with handles (A=file.pdf)",
     )
-    cat_parser.add_argument("output", help="Output PDF file")
+    cat_parser.add_argument(
+        "-o",
+        "--output",
+        required=True,
+        type=Path,
+        help="Output PDF file",
+    )
+    cat_parser.add_argument(
+        "-r",
+        "--ranges",
+        nargs="*",
+        default=[],
+        metavar="RANGE",
+        help="Page ranges (e.g., 1-5, A1-10east, Bend-1odd). "
+        "If omitted, merges all input files.",
+    )
 
-    # rotate operation (stub)
-    rotate_parser = subparsers.add_parser("rotate", help="Rotate specific pages")
+    # rotate operation
+    rotate_parser = subparsers.add_parser(
+        "rotate",
+        help="Rotate specific pages in a PDF",
+        description="Rotate specific pages in a PDF document",
+    )
     rotate_parser.add_argument(
-        "ranges", nargs="+", help="Page ranges with rotation (e.g., 1east, 5-10south)"
+        "input", type=Path, metavar="INPUT", help="Input PDF file"
     )
-    rotate_parser.add_argument("output", help="Output PDF file")
+    rotate_parser.add_argument(
+        "-o",
+        "--output",
+        required=True,
+        type=Path,
+        help="Output PDF file",
+    )
+    rotate_parser.add_argument(
+        "-r",
+        "--ranges",
+        nargs="+",
+        required=True,
+        metavar="RANGE",
+        help="Page ranges with rotation (e.g., 1east, 5-10south)",
+    )
 
-    # shuffle operation (stub)
+    # shuffle operation
     shuffle_parser = subparsers.add_parser(
-        "shuffle", help="Collate pages from multiple inputs"
+        "shuffle",
+        help="Collate pages from multiple inputs",
+        description="Collate pages from multiple PDFs in round-robin fashion",
     )
-    shuffle_parser.add_argument("ranges", nargs="+", help="Page ranges to shuffle")
-    shuffle_parser.add_argument("output", help="Output PDF file")
+    shuffle_parser.add_argument(
+        "inputs",
+        nargs="+",
+        metavar="INPUT",
+        help="Input PDF files with handles (A=file.pdf B=file.pdf)",
+    )
+    shuffle_parser.add_argument(
+        "-o",
+        "--output",
+        required=True,
+        type=Path,
+        help="Output PDF file",
+    )
+    shuffle_parser.add_argument(
+        "-r",
+        "--ranges",
+        nargs="+",
+        required=True,
+        metavar="RANGE",
+        help="Page ranges to shuffle (e.g., A1-10 B1-10)",
+    )
 
     return parser
 
@@ -91,58 +151,61 @@ def main(args=None):
     from pdftk.utils import parse_input_files, validate_pdf_exists
 
     try:
-        # Parse input files
-        handles, files = parse_input_files(parsed_args.inputs)
-
-        # Validate at least one input file was provided
-        if not files:
-            parser.error("at least one input file is required")
-
-        # If no handles were specified, assign default handles (A, B, C, ...)
-        if not handles:
-            for i, file in enumerate(files):
-                handle = chr(ord("A") + i)  # A, B, C, ...
-                handles[handle] = file
-
-        # Validate input files exist
-        for file in files:
-            validate_pdf_exists(file)
-
-        # Dispatch to operation
         if parsed_args.operation == "burst":
-            if len(files) != 1:
-                parser.error("burst operation requires exactly one input PDF")
-
-            pages = burst(files[0], parsed_args.output_pattern, parsed_args.output_dir)
-            print(f"\nSuccessfully split {pages} pages from {files[0]}")
+            # Burst: single input file
+            validate_pdf_exists(parsed_args.input)
+            pages = burst(
+                parsed_args.input, parsed_args.output_pattern, parsed_args.output_dir
+            )
+            print(f"Successfully split {pages} pages from {parsed_args.input}")
 
         elif parsed_args.operation == "cat":
-            cat(handles, parsed_args.ranges, Path(parsed_args.output))
-            print(f"\nSuccessfully created {parsed_args.output}")
+            # Cat: multiple inputs, optional page ranges
+            handles, files = parse_input_files(parsed_args.inputs)
+
+            # Validate input files exist
+            for file in files:
+                validate_pdf_exists(file)
+
+            # If no handles were specified, assign default handles (A, B, C, ...)
+            if not handles:
+                for i, file in enumerate(files):
+                    handle = chr(ord("A") + i)
+                    handles[handle] = file
+
+            cat(handles, parsed_args.ranges, parsed_args.output)
+            print(f"Successfully created {parsed_args.output}")
 
         elif parsed_args.operation == "rotate":
-            if len(files) != 1:
-                parser.error("rotate operation requires exactly one input PDF")
-
-            rotate(files[0], parsed_args.ranges, Path(parsed_args.output))
-            print(f"\nSuccessfully created {parsed_args.output}")
+            # Rotate: single input, required page ranges
+            validate_pdf_exists(parsed_args.input)
+            rotate(parsed_args.input, parsed_args.ranges, parsed_args.output)
+            print(f"Successfully created {parsed_args.output}")
 
         elif parsed_args.operation == "shuffle":
-            shuffle(handles, parsed_args.ranges, Path(parsed_args.output))
-            print(f"\nSuccessfully created {parsed_args.output}")
+            # Shuffle: multiple inputs with handles, required page ranges
+            handles, files = parse_input_files(parsed_args.inputs)
 
-        else:
-            # No operation specified - show help
-            parser.print_help()
-            sys.exit(1)
+            # Validate input files exist
+            for file in files:
+                validate_pdf_exists(file)
+
+            # Shuffle requires handles
+            if not handles:
+                print(
+                    "Error: shuffle requires input files with handles "
+                    "(e.g., A=file1.pdf B=file2.pdf)",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+
+            shuffle(handles, parsed_args.ranges, parsed_args.output)
+            print(f"Successfully created {parsed_args.output}")
 
     except FileNotFoundError as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
     except ValueError as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
-    except NotImplementedError as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
