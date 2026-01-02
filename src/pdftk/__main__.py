@@ -7,5 +7,5 @@ This module allows pdftk to be invoked as:
 
 from pdftk.cli import main
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

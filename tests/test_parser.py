@@ -3,7 +3,7 @@
 import pytest
 from pathlib import Path
 from pypdf import PdfReader
-from pdftk.parser import PageRangeParser, PageSpec
+from pdftk.parser import PageRangeParser
 
 
 @pytest.fixture
@@ -16,8 +16,8 @@ def fixtures_dir():
 def mock_readers(fixtures_dir):
     """Create mock PDF readers for testing"""
     return {
-        'A': PdfReader(fixtures_dir / "10page.pdf"),
-        'B': PdfReader(fixtures_dir / "20page.pdf")
+        "A": PdfReader(fixtures_dir / "10page.pdf"),
+        "B": PdfReader(fixtures_dir / "20page.pdf"),
     }
 
 
@@ -251,7 +251,7 @@ class TestHandles:
         specs = parser.parse("A")
 
         assert len(specs) == 1
-        assert specs[0].handle == 'A'
+        assert specs[0].handle == "A"
         assert specs[0].pages == list(range(1, 11))  # A has 10 pages
 
     def test_handle_with_range(self, mock_readers):
@@ -260,7 +260,7 @@ class TestHandles:
         specs = parser.parse("A1-5")
 
         assert len(specs) == 1
-        assert specs[0].handle == 'A'
+        assert specs[0].handle == "A"
         assert specs[0].pages == [1, 2, 3, 4, 5]
 
     def test_handle_with_reverse(self, mock_readers):
@@ -269,7 +269,7 @@ class TestHandles:
         specs = parser.parse("Bend-1")
 
         assert len(specs) == 1
-        assert specs[0].handle == 'B'
+        assert specs[0].handle == "B"
         assert specs[0].pages == list(range(20, 0, -1))  # B has 20 pages, reversed
 
     def test_handle_with_odd_qualifier(self, mock_readers):
@@ -278,7 +278,7 @@ class TestHandles:
         specs = parser.parse("B5-20odd")
 
         assert len(specs) == 1
-        assert specs[0].handle == 'B'
+        assert specs[0].handle == "B"
         assert specs[0].pages == [5, 7, 9, 11, 13, 15, 17, 19]
 
     def test_handle_with_rotation(self, mock_readers):
@@ -287,7 +287,7 @@ class TestHandles:
         specs = parser.parse("A1-5east")
 
         assert len(specs) == 1
-        assert specs[0].handle == 'A'
+        assert specs[0].handle == "A"
         assert specs[0].pages == [1, 2, 3, 4, 5]
         assert specs[0].rotation == 90
 
@@ -297,9 +297,9 @@ class TestHandles:
         specs = parser.parse("A1-5 B10-15")
 
         assert len(specs) == 2
-        assert specs[0].handle == 'A'
+        assert specs[0].handle == "A"
         assert specs[0].pages == [1, 2, 3, 4, 5]
-        assert specs[1].handle == 'B'
+        assert specs[1].handle == "B"
         assert specs[1].pages == [10, 11, 12, 13, 14, 15]
 
 
@@ -314,12 +314,12 @@ class TestCombinedComplexRanges:
         assert len(specs) == 2
 
         # First spec: A1-10east
-        assert specs[0].handle == 'A'
+        assert specs[0].handle == "A"
         assert specs[0].pages == list(range(1, 11))
         assert specs[0].rotation == 90
 
         # Second spec: B5-20odd
-        assert specs[1].handle == 'B'
+        assert specs[1].handle == "B"
         assert specs[1].pages == [5, 7, 9, 11, 13, 15, 17, 19]
         assert specs[1].rotation == 0
 
@@ -331,15 +331,15 @@ class TestCombinedComplexRanges:
         assert len(specs) == 3
 
         # First spec: A1-5
-        assert specs[0].handle == 'A'
+        assert specs[0].handle == "A"
         assert specs[0].pages == [1, 2, 3, 4, 5]
 
         # Second spec: B (all pages)
-        assert specs[1].handle == 'B'
+        assert specs[1].handle == "B"
         assert specs[1].pages == list(range(1, 21))  # B has 20 pages
 
         # Third spec: Aend (last page of A)
-        assert specs[2].handle == 'A'
+        assert specs[2].handle == "A"
         assert specs[2].pages == [10]
 
     def test_reverse_with_qualifier_and_rotation(self, mock_readers):
@@ -348,7 +348,7 @@ class TestCombinedComplexRanges:
         specs = parser.parse("Bend-1evensouth")
 
         assert len(specs) == 1
-        assert specs[0].handle == 'B'
+        assert specs[0].handle == "B"
         assert specs[0].pages == [20, 18, 16, 14, 12, 10, 8, 6, 4, 2]
         assert specs[0].rotation == 180
 
@@ -360,15 +360,15 @@ class TestCombinedComplexRanges:
         assert len(specs) == 3
 
         # First spec: A1-10even
-        assert specs[0].handle == 'A'
+        assert specs[0].handle == "A"
         assert specs[0].pages == [2, 4, 6, 8, 10]
 
         # Second spec: Br3-r1 (last 3 pages of B)
-        assert specs[1].handle == 'B'
+        assert specs[1].handle == "B"
         assert specs[1].pages == [18, 19, 20]
 
         # Third spec: B5west
-        assert specs[2].handle == 'B'
+        assert specs[2].handle == "B"
         assert specs[2].pages == [5]
         assert specs[2].rotation == 270
 

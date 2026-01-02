@@ -8,12 +8,16 @@ This module implements the main PDF manipulation operations:
 """
 
 from pathlib import Path
-from pypdf import PdfReader, PdfWriter
 from typing import Optional
+from pypdf import PdfReader, PdfWriter
 from pdftk.parser import PageRangeParser
 
 
-def burst(input_file: Path, output_pattern: str = "pg_%04d.pdf", output_dir: Path = None) -> int:
+def burst(
+    input_file: Path,
+    output_pattern: str = "pg_%04d.pdf",
+    output_dir: Optional[Path] = None,
+) -> int:
     """Split a PDF into individual page files
 
     Args:
@@ -41,7 +45,7 @@ def burst(input_file: Path, output_pattern: str = "pg_%04d.pdf", output_dir: Pat
         writer.add_page(page)
 
         output_file = output_dir / (output_pattern % i)
-        with open(output_file, 'wb') as f:
+        with open(output_file, "wb") as f:
             writer.write(f)
 
         print(f"Created: {output_file}")
@@ -102,6 +106,8 @@ def cat(input_files: dict[str, Path], page_ranges: list[str], output: Path) -> N
                 if spec.handle:
                     reader = readers[spec.handle]
                 else:
+                    if default_reader is None:
+                        raise ValueError("No default reader available")
                     reader = default_reader
 
                 # Extract and add pages
@@ -115,7 +121,7 @@ def cat(input_files: dict[str, Path], page_ranges: list[str], output: Path) -> N
                     writer.add_page(page)
 
     # Write output
-    with open(output, 'wb') as f:
+    with open(output, "wb") as f:
         writer.write(f)
 
     print(f"Created: {output}")
@@ -166,7 +172,7 @@ def rotate(input_file: Path, page_ranges: list[str], output: Path) -> None:
         writer.add_page(page)
 
     # Write output
-    with open(output, 'wb') as f:
+    with open(output, "wb") as f:
         writer.write(f)
 
     print(f"Created: {output}")
@@ -216,6 +222,8 @@ def shuffle(input_files: dict[str, Path], page_ranges: list[str], output: Path) 
     # Each iterator yields (reader, page_num, rotation) tuples
     page_iterators = []
     for spec in all_specs:
+        if spec.handle is None:
+            raise ValueError("Shuffle requires handle-based file references")
         reader = readers[spec.handle]
         # Create list of tuples (not generator) to avoid closure bug
         pages_list = [(reader, page_num, spec.rotation) for page_num in spec.pages]
@@ -225,7 +233,9 @@ def shuffle(input_files: dict[str, Path], page_ranges: list[str], output: Path) 
     # Round-robin through iterators
     writer = PdfWriter()
     while page_iterators:
-        for page_iter in page_iterators[:]:  # Copy list to allow removal during iteration
+        for page_iter in page_iterators[
+            :
+        ]:  # Copy list to allow removal during iteration
             try:
                 reader, page_num, rotation = next(page_iter)
 
@@ -243,7 +253,7 @@ def shuffle(input_files: dict[str, Path], page_ranges: list[str], output: Path) 
                 page_iterators.remove(page_iter)
 
     # Write output
-    with open(output, 'wb') as f:
+    with open(output, "wb") as f:
         writer.write(f)
 
     print(f"Created: {output}")

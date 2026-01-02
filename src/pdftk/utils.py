@@ -17,7 +17,8 @@ def parse_input_files(inputs: list[str]) -> Tuple[Dict[str, Path], list[Path]]:
 
     Examples:
         >>> parse_input_files(['A=in1.pdf', 'B=in2.pdf'])
-        ({'A': Path('in1.pdf'), 'B': Path('in2.pdf')}, [Path('in1.pdf'), Path('in2.pdf')])
+        ({'A': Path('in1.pdf'), 'B': Path('in2.pdf')},
+         [Path('in1.pdf'), Path('in2.pdf')])
 
         >>> parse_input_files(['input.pdf'])
         ({}, [Path('input.pdf')])
@@ -26,9 +27,9 @@ def parse_input_files(inputs: list[str]) -> Tuple[Dict[str, Path], list[Path]]:
     files = []
 
     for spec in inputs:
-        if '=' in spec:
+        if "=" in spec:
             # Handle-based input: A=file.pdf
-            handle, filepath = spec.split('=', 1)
+            handle, filepath = spec.split("=", 1)
             path = Path(filepath)
             handles[handle.upper()] = path
             files.append(path)
@@ -53,5 +54,5 @@ def validate_pdf_exists(path: Path) -> None:
     if not path.exists():
         raise FileNotFoundError(f"PDF file not found: {path}")
 
-    if not path.suffix.lower() == '.pdf':
+    if not path.suffix.lower() == ".pdf":
         raise ValueError(f"File is not a PDF: {path}")

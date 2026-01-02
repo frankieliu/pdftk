@@ -45,7 +45,9 @@ class TestBurst:
     def test_burst_custom_pattern(self, fixtures_dir, temp_output_dir):
         """Test burst with custom output pattern"""
         input_pdf = fixtures_dir / "10page.pdf"
-        page_count = burst(input_pdf, output_pattern="page_%02d.pdf", output_dir=temp_output_dir)
+        page_count = burst(
+            input_pdf, output_pattern="page_%02d.pdf", output_dir=temp_output_dir
+        )
 
         assert page_count == 10
 
@@ -60,8 +62,8 @@ class TestCat:
     def test_cat_merge_all(self, fixtures_dir, temp_output_dir):
         """Test merging all pages from multiple PDFs"""
         input_files = {
-            'A': fixtures_dir / "1page.pdf",
-            'B': fixtures_dir / "10page.pdf"
+            "A": fixtures_dir / "1page.pdf",
+            "B": fixtures_dir / "10page.pdf",
         }
         output = temp_output_dir / "merged.pdf"
 
@@ -74,10 +76,10 @@ class TestCat:
 
     def test_cat_simple_range(self, fixtures_dir, temp_output_dir):
         """Test extracting pages with simple range"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
         output = temp_output_dir / "subset.pdf"
 
-        cat(input_files, ['1-5'], output)
+        cat(input_files, ["1-5"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -85,10 +87,10 @@ class TestCat:
 
     def test_cat_multiple_ranges(self, fixtures_dir, temp_output_dir):
         """Test multiple page ranges"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
         output = temp_output_dir / "multiple.pdf"
 
-        cat(input_files, ['1-3', '7-9'], output)
+        cat(input_files, ["1-3", "7-9"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -97,12 +99,12 @@ class TestCat:
     def test_cat_with_handles(self, fixtures_dir, temp_output_dir):
         """Test using handle-based references"""
         input_files = {
-            'A': fixtures_dir / "10page.pdf",
-            'B': fixtures_dir / "20page.pdf"
+            "A": fixtures_dir / "10page.pdf",
+            "B": fixtures_dir / "20page.pdf",
         }
         output = temp_output_dir / "handles.pdf"
 
-        cat(input_files, ['A1-5', 'B1-3'], output)
+        cat(input_files, ["A1-5", "B1-3"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -110,10 +112,10 @@ class TestCat:
 
     def test_cat_reverse_range(self, fixtures_dir, temp_output_dir):
         """Test reverse page range"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
         output = temp_output_dir / "reverse.pdf"
 
-        cat(input_files, ['10-1'], output)
+        cat(input_files, ["10-1"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -121,26 +123,26 @@ class TestCat:
 
     def test_cat_even_odd(self, fixtures_dir, temp_output_dir):
         """Test even/odd qualifiers"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
 
         # Test even pages
         output_even = temp_output_dir / "even.pdf"
-        cat(input_files, ['1-10even'], output_even)
+        cat(input_files, ["1-10even"], output_even)
         reader_even = PdfReader(output_even)
         assert len(reader_even.pages) == 5  # 2,4,6,8,10
 
         # Test odd pages
         output_odd = temp_output_dir / "odd.pdf"
-        cat(input_files, ['1-10odd'], output_odd)
+        cat(input_files, ["1-10odd"], output_odd)
         reader_odd = PdfReader(output_odd)
         assert len(reader_odd.pages) == 5  # 1,3,5,7,9
 
     def test_cat_with_rotation(self, fixtures_dir, temp_output_dir):
         """Test page rotation during cat"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
         output = temp_output_dir / "rotated.pdf"
 
-        cat(input_files, ['1-5east'], output)
+        cat(input_files, ["1-5east"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -154,12 +156,12 @@ class TestCat:
     def test_cat_complex_combination(self, fixtures_dir, temp_output_dir):
         """Test complex combination of features"""
         input_files = {
-            'A': fixtures_dir / "10page.pdf",
-            'B': fixtures_dir / "20page.pdf"
+            "A": fixtures_dir / "10page.pdf",
+            "B": fixtures_dir / "20page.pdf",
         }
         output = temp_output_dir / "complex.pdf"
 
-        cat(input_files, ['A1-5', 'B10-15', 'A6-10'], output)
+        cat(input_files, ["A1-5", "B10-15", "A6-10"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -167,10 +169,10 @@ class TestCat:
 
     def test_cat_end_keyword(self, fixtures_dir, temp_output_dir):
         """Test 'end' keyword"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
         output = temp_output_dir / "end.pdf"
 
-        cat(input_files, ['5-end'], output)
+        cat(input_files, ["5-end"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -178,10 +180,10 @@ class TestCat:
 
     def test_cat_reverse_numbering(self, fixtures_dir, temp_output_dir):
         """Test reverse numbering (r1, r2, etc.)"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
         output = temp_output_dir / "rlast.pdf"
 
-        cat(input_files, ['r3-r1'], output)
+        cat(input_files, ["r3-r1"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -196,7 +198,7 @@ class TestRotate:
         input_file = fixtures_dir / "10page.pdf"
         output = temp_output_dir / "rotated.pdf"
 
-        rotate(input_file, ['1east'], output)
+        rotate(input_file, ["1east"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -213,7 +215,7 @@ class TestRotate:
         input_file = fixtures_dir / "10page.pdf"
         output = temp_output_dir / "range_rotated.pdf"
 
-        rotate(input_file, ['1-5south'], output)
+        rotate(input_file, ["1-5south"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -231,7 +233,7 @@ class TestRotate:
         input_file = fixtures_dir / "10page.pdf"
         output = temp_output_dir / "multi_rotated.pdf"
 
-        rotate(input_file, ['1-3east', '7-9west'], output)
+        rotate(input_file, ["1-3east", "7-9west"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -254,18 +256,18 @@ class TestRotate:
 
         # Test each rotation direction
         rotations = {
-            'north': 0,
-            'east': 90,
-            'south': 180,
-            'west': 270,
-            'right': 90,
-            'down': 180,
-            'left': -90  # -90 = 270
+            "north": 0,
+            "east": 90,
+            "south": 180,
+            "west": 270,
+            "right": 90,
+            "down": 180,
+            "left": -90,  # -90 = 270
         }
 
         for direction, expected_rotation in rotations.items():
             output = temp_output_dir / f"rotate_{direction}.pdf"
-            rotate(input_file, [f'1{direction}'], output)
+            rotate(input_file, [f"1{direction}"], output)
 
             reader = PdfReader(output)
             actual_rotation = reader.pages[0].rotation % 360
@@ -280,12 +282,12 @@ class TestShuffle:
     def test_shuffle_two_files(self, fixtures_dir, temp_output_dir):
         """Test basic shuffle of two files"""
         input_files = {
-            'A': fixtures_dir / "10page.pdf",
-            'B': fixtures_dir / "10page.pdf"
+            "A": fixtures_dir / "10page.pdf",
+            "B": fixtures_dir / "10page.pdf",
         }
         output = temp_output_dir / "shuffled.pdf"
 
-        shuffle(input_files, ['A1-5', 'B1-5'], output)
+        shuffle(input_files, ["A1-5", "B1-5"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -295,12 +297,12 @@ class TestShuffle:
     def test_shuffle_reverse(self, fixtures_dir, temp_output_dir):
         """Test shuffle with reverse range"""
         input_files = {
-            'A': fixtures_dir / "10page.pdf",
-            'B': fixtures_dir / "10page.pdf"
+            "A": fixtures_dir / "10page.pdf",
+            "B": fixtures_dir / "10page.pdf",
         }
         output = temp_output_dir / "shuffle_reverse.pdf"
 
-        shuffle(input_files, ['A1-5', 'B5-1'], output)
+        shuffle(input_files, ["A1-5", "B5-1"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -310,13 +312,13 @@ class TestShuffle:
     def test_shuffle_unequal_lengths(self, fixtures_dir, temp_output_dir):
         """Test shuffle with unequal page counts"""
         input_files = {
-            'A': fixtures_dir / "10page.pdf",
-            'B': fixtures_dir / "10page.pdf"
+            "A": fixtures_dir / "10page.pdf",
+            "B": fixtures_dir / "10page.pdf",
         }
         output = temp_output_dir / "shuffle_unequal.pdf"
 
         # A has 3 pages, B has 7 pages
-        shuffle(input_files, ['A1-3', 'B1-7'], output)
+        shuffle(input_files, ["A1-3", "B1-7"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -325,13 +327,10 @@ class TestShuffle:
 
     def test_shuffle_all_pages(self, fixtures_dir, temp_output_dir):
         """Test shuffle using handle only (all pages)"""
-        input_files = {
-            'A': fixtures_dir / "1page.pdf",
-            'B': fixtures_dir / "1page.pdf"
-        }
+        input_files = {"A": fixtures_dir / "1page.pdf", "B": fixtures_dir / "1page.pdf"}
         output = temp_output_dir / "shuffle_all.pdf"
 
-        shuffle(input_files, ['A', 'B'], output)
+        shuffle(input_files, ["A", "B"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -340,12 +339,12 @@ class TestShuffle:
     def test_shuffle_with_rotation(self, fixtures_dir, temp_output_dir):
         """Test shuffle with rotation"""
         input_files = {
-            'A': fixtures_dir / "10page.pdf",
-            'B': fixtures_dir / "10page.pdf"
+            "A": fixtures_dir / "10page.pdf",
+            "B": fixtures_dir / "10page.pdf",
         }
         output = temp_output_dir / "shuffle_rotated.pdf"
 
-        shuffle(input_files, ['A1-3east', 'B1-3'], output)
+        shuffle(input_files, ["A1-3east", "B1-3"], output)
 
         assert output.exists()
         reader = PdfReader(output)
@@ -353,9 +352,9 @@ class TestShuffle:
 
         # Pages from A (even indices in round-robin) should be rotated
         assert reader.pages[0].rotation % 360 == 90  # A1
-        assert reader.pages[1].rotation % 360 == 0   # B1
+        assert reader.pages[1].rotation % 360 == 0  # B1
         assert reader.pages[2].rotation % 360 == 90  # A2
-        assert reader.pages[3].rotation % 360 == 0   # B2
+        assert reader.pages[3].rotation % 360 == 0  # B2
 
 
 class TestEdgeCases:
@@ -363,7 +362,7 @@ class TestEdgeCases:
 
     def test_cat_empty_ranges_single_file(self, fixtures_dir, temp_output_dir):
         """Test cat with empty ranges and single file"""
-        input_files = {'A': fixtures_dir / "10page.pdf"}
+        input_files = {"A": fixtures_dir / "10page.pdf"}
         output = temp_output_dir / "all.pdf"
 
         cat(input_files, [], output)
@@ -373,10 +372,10 @@ class TestEdgeCases:
 
     def test_cat_single_page_pdf(self, fixtures_dir, temp_output_dir):
         """Test cat with single page PDF"""
-        input_files = {'A': fixtures_dir / "1page.pdf"}
+        input_files = {"A": fixtures_dir / "1page.pdf"}
         output = temp_output_dir / "single.pdf"
 
-        cat(input_files, ['1'], output)
+        cat(input_files, ["1"], output)
 
         reader = PdfReader(output)
         assert len(reader.pages) == 1
@@ -387,7 +386,7 @@ class TestEdgeCases:
         output = temp_output_dir / "no_rotation.pdf"
 
         # Pages without rotation keywords should remain unrotated
-        rotate(input_file, ['1-5'], output)
+        rotate(input_file, ["1-5"], output)
 
         reader = PdfReader(output)
         for i in range(10):
