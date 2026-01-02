@@ -117,7 +117,7 @@ class PageRangeParser:
             match = re.match(r"^([A-Z]+)", part)
             if match:
                 handle = match.group(1)
-                remaining = part[len(handle):]
+                remaining = part[len(handle) :]
 
         # If only handle and nothing else (e.g., "A" or "B")
         if not remaining and handle:
