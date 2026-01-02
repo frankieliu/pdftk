@@ -1,6 +1,8 @@
 # pdftk-python
 
 [![CI](https://github.com/frankieliu/pdftk/actions/workflows/ci.yml/badge.svg)](https://github.com/frankieliu/pdftk/actions/workflows/ci.yml)
+[![PyPI version](https://badge.fury.io/py/pdftk-python.svg)](https://pypi.org/project/pdftk-python/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/pdftk-python.svg)](https://pypi.org/project/pdftk-python/)
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -32,6 +34,14 @@ A Python implementation of pdftk (PDF Toolkit) for manipulating PDF documents fr
 
 ## Installation
 
+### From PyPI (recommended)
+
+```bash
+pip install pdftk-python
+```
+
+After installation, the `pdftk` command will be available in your terminal.
+
 ### From Source
 
 ```bash
@@ -39,7 +49,7 @@ cd pdftk
 pip install -e .
 ```
 
-### Using uv (recommended)
+### For Development
 
 ```bash
 cd pdftk
