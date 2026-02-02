@@ -57,6 +57,27 @@ def create_parser() -> argparse.ArgumentParser:
         "cat",
         help="Concatenate/merge PDFs with page ranges",
         description="Concatenate and merge PDFs with optional page selection",
+        epilog="""
+Examples:
+  # Extract pages 1-3 from a.pdf and pages 5, 7 from b.pdf
+  pdftk cat A=a.pdf B=b.pdf -o out.pdf -r A1-3 B5 B7
+
+  # Multiple ranges from each file
+  pdftk cat A=a.pdf B=b.pdf -o out.pdf -r A1-3 A10 B5 B7 B8-10
+
+  # With rotation (pages 1-3 from A rotated 90° clockwise)
+  pdftk cat A=a.pdf B=b.pdf -o out.pdf -r A1-3east B5 B7
+
+  # With even/odd qualifiers
+  pdftk cat A=a.pdf B=b.pdf -o out.pdf -r A1-10even B5-10odd
+
+  # Merge all pages (no ranges specified)
+  pdftk cat A=a.pdf B=b.pdf -o merged.pdf
+
+  # Single file without handles
+  pdftk cat input.pdf -o output.pdf -r 1-5
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     cat_parser.add_argument(
         "inputs",
@@ -78,7 +99,7 @@ def create_parser() -> argparse.ArgumentParser:
         default=[],
         metavar="RANGE",
         help="Page ranges (e.g., 1-5, A1-10east, Bend-1odd). "
-        "If omitted, merges all input files.",
+        "If omitted, merges all input files. Ranges are space-separated.",
     )
 
     # rotate operation

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pdftk-python"
-version = "0.1.0"
+version = "0.1.1"
 description = "PDF Toolkit - A command-line tool for manipulating PDF documents"
 readme = "README.md"
 requires-python = ">=3.9"

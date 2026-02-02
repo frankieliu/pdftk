@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-02-02
+
+### Added
+- Enhanced CLI help text for `cat` operation with comprehensive examples
+- Examples showing multi-file operations with different page ranges
+- Examples demonstrating space-separated range syntax (A1-3 B5 B7)
+- Examples with rotation (A1-3east) and even/odd qualifiers
+- Test suite for multi-PDF operations with labeled test PDFs
+- UV tool management guide (UV_TOOL_GUIDE.md)
+- PyPI update guide (UPDATING_PYPI.md)
+
+### Changed
+- Improved `--ranges` help text to clarify space-separated syntax
+- Enhanced documentation for combining multiple files with handles
+
+### Fixed
+- Clarified that page ranges use spaces, not commas (B5 B7, not B5,7)
+
 ## [0.1.0] - 2026-01-02
 
 ### Added
