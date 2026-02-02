@@ -17,7 +17,7 @@ def create_parser() -> argparse.ArgumentParser:
         epilog="For more information and examples, see README.md",
     )
 
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.1")
 
     # Subcommands for operations
     subparsers = parser.add_subparsers(
